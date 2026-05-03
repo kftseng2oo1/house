@@ -1,0 +1,15 @@
+<svg id="svgMain" width="512" height="512" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" id="sStart" stop-color="#D4D486"></stop>
+            <stop offset="100%" id="sEnd" stop-color="#808000"></stop>
+          </linearGradient>
+          <filter id="fShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0.5" stdDeviation="0.8" flood-color="rgba(0,0,0,0.7)"></feDropShadow>
+          </filter>
+        </defs>
+        <rect id="elRect" x="0.5" y="0.5" width="23" height="23" rx="7.56" ry="7.56" fill="#8d8eff"></rect>
+        <circle id="elCirc" cx="12" cy="12" r="11.5" fill="#8d8eff" style="display:none"></circle>
+        <path id="elGeo" d="M8.009,19.505L9.391,14.797L4.792,16.504L8.342,13.118L3.505,12.297L8.273,11.140L4.495,8.009L9.203,9.391L7.496,4.792L10.882,8.342L11.703,3.505L12.860,8.273L15.991,4.495L14.609,9.203L19.208,7.496L15.658,10.882L20.495,11.703L15.727,12.860L19.505,15.991L14.797,14.609L16.504,19.208L13.118,15.658L12.297,20.495L11.140,15.727Z" fill="url(#g1)"></path>
+        <g id="elSlot"><text x="12" y="12" dy="0.38em" text-anchor="middle" font-weight="900" font-size="6.21" fill="#FFFFFF">TAK</text></g>
+      </svg>

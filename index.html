@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head><!-- PWA Meta — auto-injected by PWA 打包神器 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>任務管理中心</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1a1a;--ink2:#555;--ink3:#888;--surface:#fff;--surface2:#f7f6f3;--surface3:#eeecea;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --finance:#c0392b;--life:#27ae60;--digital:#8e44ad;--other:#7f8c8d;--temp:#d68910;
+  --accent:#2c3e50;
+  --p-high:#e74c3c;--p-mid:#e67e22;--p-low:#3498db;
+}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--surface2);color:var(--ink);min-height:100vh;padding:16px 12px 40px}
+h2{font-size:20px;font-weight:700;text-align:center;letter-spacing:2px;color:var(--accent);margin-bottom:16px;padding-top:4px}
+.app{max-width:420px;margin:0 auto}
+.panel{background:var(--surface);border:0.5px solid var(--border2);border-radius:16px;padding:18px;margin-bottom:14px}
+.panel-title{font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase}
+.tabs{display:flex;margin-bottom:14px;border:0.5px solid var(--border2);border-radius:10px;overflow:hidden}
+.tab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:500;cursor:pointer;background:var(--surface2);color:var(--ink2);border:none;font-family:'Noto Sans TC',sans-serif}
+.tab.active{background:var(--accent);color:#fff}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:11px}
+.field label{font-size:11px;color:var(--ink3);font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:0.5px solid var(--border2);border-radius:8px;font-size:15px;font-family:'Noto Sans TC',sans-serif;background:var(--surface);color:var(--ink);outline:none}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.notify-block{border:0.5px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:11px;background:var(--surface2)}
+.notify-block .nb-label{font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--ink3);margin-bottom:8px;text-transform:uppercase}
+.notify-type-row{display:flex;gap:6px;margin-bottom:10px}
+.ntype-btn{flex:1;padding:7px 4px;border:0.5px solid var(--border2);border-radius:8px;font-size:12px;font-weight:700;font-family:'Noto Sans TC',sans-serif;background:var(--surface);color:var(--ink2);cursor:pointer;text-align:center}
+.ntype-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.notify-detail{display:none;flex-direction:column;gap:8px}
+.notify-detail.show{display:flex}
+.notify-detail input{padding:9px 11px;border:0.5px solid var(--border2);border-radius:8px;font-size:14px;font-family:'DM Mono',monospace;background:var(--surface);color:var(--ink);outline:none;width:100%}
+.notify-detail .hint{font-size:11px;color:var(--ink3);line-height:1.5}
+.add-btn{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;letter-spacing:1px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.section-label{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase}
+.sort-select{font-size:12px;padding:5px 8px;border:0.5px solid var(--border2);border-radius:7px;font-family:'Noto Sans TC',sans-serif;background:var(--surface);color:var(--ink);outline:none;cursor:pointer}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.stat-box{background:var(--surface3);border-radius:10px;padding:10px;text-align:center}
+.stat-num{font-size:22px;font-weight:700;color:var(--accent)}
+.stat-lab{font-size:10px;color:var(--ink3);margin-top:2px;letter-spacing:.5px}
+.prog-wrap{background:var(--surface3);border-radius:8px;height:6px;margin-bottom:14px;overflow:hidden}
+.prog-bar{height:100%;background:var(--accent);border-radius:8px;transition:width .4s}
+.task-card{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.task-card.done{opacity:.45;background:var(--surface2)}
+.task-card.done .task-name{text-decoration:line-through;color:var(--ink3)}
+.pri-bar{width:4px;flex-shrink:0;align-self:stretch;min-height:60px}
+.pri-bar.high{background:var(--p-high)}.pri-bar.mid{background:var(--p-mid)}.pri-bar.low{background:var(--p-low)}.pri-bar.none{background:transparent}
+.card-top{padding:12px 14px 12px 10px;display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:7px}
+.cat-dot.finance{background:var(--finance)}.cat-dot.life{background:var(--life)}.cat-dot.digital{background:var(--digital)}.cat-dot.other{background:var(--other)}.cat-dot.temp{background:var(--temp)}
+.task-info{flex:1;min-width:0}
+.meta-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;flex-wrap:wrap}
+.cat-pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;color:#fff}
+.cat-pill.finance{background:var(--finance)}.cat-pill.life{background:var(--life)}.cat-pill.digital{background:var(--digital)}.cat-pill.other{background:var(--other)}.cat-pill.temp{background:var(--temp)}
+.pri-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+.pri-badge.high{background:#fdecea;color:var(--p-high)}.pri-badge.mid{background:#fef3e2;color:var(--p-mid)}.pri-badge.low{background:#e8f4fc;color:var(--p-low)}
+.notify-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:#e8f4fc;color:#1a6fa8;font-weight:700}
+.task-name{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.task-date{font-size:12px;color:var(--ink3);font-family:'DM Mono',monospace}
+.card-actions{display:flex;gap:6px;flex-shrink:0;align-items:flex-start}
+.act-btn{padding:5px 10px;border-radius:7px;border:none;font-size:12px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer}
+.done-btn{background:#eafaf1;color:#27ae60}.done-btn.undo{background:#f0f0f0;color:#888}
+.del-btn{background:#fdf0f0;color:#c0392b}
+.edit-area{display:none;padding:14px;border-top:0.5px solid var(--border);background:var(--surface2);flex-direction:column;gap:10px}
+.edit-area.open{display:flex}
+.edit-row{display:flex;gap:8px;align-items:center}
+.edit-row label{font-size:11px;color:var(--ink3);font-weight:700;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase}
+.edit-row select,.edit-row input{flex:1;padding:7px 9px;border:0.5px solid var(--border2);border-radius:7px;font-family:'Noto Sans TC',sans-serif;font-size:13px;background:var(--surface);color:var(--ink);outline:none}
+.edit-row input{font-family:'DM Mono',monospace}
+.edit-area textarea{width:100%;border:0.5px solid var(--border2);border-radius:8px;padding:9px;font-size:14px;font-family:'Noto Sans TC',sans-serif;background:var(--surface);color:var(--ink);resize:none;outline:none}
+.edit-notify{border:0.5px solid var(--border2);border-radius:9px;padding:10px;background:var(--surface)}
+.edit-notify .en-label{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
+.en-type-row{display:flex;gap:5px;margin-bottom:8px}
+.en-type-btn{flex:1;padding:6px 3px;border:0.5px solid var(--border2);border-radius:7px;font-size:11px;font-weight:700;font-family:'Noto Sans TC',sans-serif;background:var(--surface2);color:var(--ink2);cursor:pointer;text-align:center}
+.en-type-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.en-detail{display:none;flex-direction:column;gap:6px}
+.en-detail.show{display:flex}
+.en-detail input{padding:8px 10px;border:0.5px solid var(--border2);border-radius:7px;font-size:13px;font-family:'DM Mono',monospace;background:var(--surface2);color:var(--ink);outline:none;width:100%}
+.save-btn{width:100%;padding:9px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;font-size:14px}
+.sync-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:14px}
+.sync-status{font-size:12px;color:var(--ink3)}
+.sync-btn{padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer}
+.sync-btn:disabled{background:#ccc;cursor:not-allowed}
+.empty{text-align:center;color:var(--ink3);font-size:14px;padding:30px 0}
+</style>
+<meta name="application-name" content="日常家事通知"><meta name="description" content="日常家事通知"><meta name="theme-color" content="#1a73e8"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="日常家事通知"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg"><script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(r => console.log('[SW] registered:', r.scope))
+        .catch(e => console.warn('[SW] registration failed:', e));
+    });
+  }</script></head>
+<body>
+<div class="app">
+  <h2>🗓 任務管理中心</h2>
+
+  <div class="stats">
+    <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-lab">全部任務</div></div>
+    <div class="stat-box"><div class="stat-num" id="statDone">0</div><div class="stat-lab">本月完成</div></div>
+    <div class="stat-box"><div class="stat-num" id="statHigh">0</div><div class="stat-lab">高優先度</div></div>
+  </div>
+  <div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+
+  <div class="sync-bar">
+    <span class="sync-status" id="syncStatus">尚未同步至雲端</span>
+    <button class="sync-btn" id="syncBtn" onclick="syncToKV()">☁️ 同步</button>
+  </div>
+
+  <div class="panel">
+    <div class="tabs">
+      <button class="tab active" id="tabMonthly" onclick="setType('monthly')">📅 每月固定</button>
+      <button class="tab" id="tabOnce" onclick="setType('once')">⚡ 臨時任務</button>
+    </div>
+
+    <div class="field"><label>任務名稱</label><input type="text" id="taskName" placeholder="輸入任務名稱…"></div>
+    <div class="field" id="catField"><label>類別</label>
+      <select id="taskCat">
+        <option value="finance">💰 財務</option>
+        <option value="life">🌿 生活</option>
+        <option value="digital">💻 數位</option>
+        <option value="other">📦 其他</option>
+      </select>
+    </div>
+    <div class="field"><label>優先度</label>
+      <select id="taskPri">
+        <option value="none">— 不設定</option>
+        <option value="high">🔴 高</option>
+        <option value="mid">🟠 中</option>
+        <option value="low">🔵 低</option>
+      </select>
+    </div>
+    <div class="field" id="dayField"><label>每月幾號</label><select id="taskDay"></select></div>
+
+    <div class="notify-block">
+      <div class="nb-label">🔔 到期通知</div>
+      <div class="notify-type-row">
+        <button class="ntype-btn active" onclick="setNewNotifyType('none')">不通知</button>
+        <button class="ntype-btn" onclick="setNewNotifyType('line')">LINE</button>
+        <button class="ntype-btn" onclick="setNewNotifyType('email')">Email</button>
+        <button class="ntype-btn" onclick="setNewNotifyType('both')">兩者</button>
+      </div>
+      <div class="notify-detail" id="newNotifyDetail">
+        <input type="text" id="newLineId" placeholder="LINE User ID（Uxxxxxxxxxx）">
+        <input type="email" id="newEmail" placeholder="Email 地址">
+        <div class="hint">📌 LINE User ID 可在 LINE Developers → Channel → Webhook 測試取得</div>
+      </div>
+    </div>
+
+    <button class="add-btn" onclick="addTask()">＋ 新增任務</button>
+  </div>
+
+  <div class="toolbar">
+    <div class="section-label">任務清單</div>
+    <select class="sort-select" id="sortMode" onchange="render()">
+      <option value="pri">依優先度</option>
+      <option value="date">依日期</option>
+      <option value="cat">依類別</option>
+      <option value="done">未完成優先</option>
+    </select>
+  </div>
+  <div id="taskList"></div>
+</div>
+
+<script>
+const WORKER = 'https://arcar.kftseng2oo1.workers.dev';
+const catMap = {finance:'財務',life:'生活',digital:'數位',other:'其他',temp:'臨時'};
+const priMap = {high:'高',mid:'中',low:'低',none:''};
+const priOrder = {high:0,mid:1,low:2,none:3};
+
+let tasks = JSON.parse(localStorage.getItem('houseTasksV3') || '[]');
+let mode = 'monthly';
+let newNotifyType = 'none';
+
+// 初始化日期選單
+(function(){
+  const ds = document.getElementById('taskDay');
+  for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i+' 號';ds.appendChild(o);}
+  const lo=document.createElement('option');lo.value='last';lo.textContent='月底最後一天';ds.appendChild(lo);
+})();
+
+function setType(t){
+  mode = t;
+  document.getElementById('tabMonthly').classList.toggle('active', t==='monthly');
+  document.getElementById('tabOnce').classList.toggle('active', t==='once');
+  const df = document.getElementById('dayField');
+  const cf = document.getElementById('catField');
+  if(t==='once'){
+    df.innerHTML = '<label>日期</label><input type="date" id="taskDay">';
+    cf.style.display = 'none';
+  } else {
+    df.innerHTML = '<label>每月幾號</label><select id="taskDay"></select>';
+    const ds = document.getElementById('taskDay');
+    for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i+' 號';ds.appendChild(o);}
+    const lo=document.createElement('option');lo.value='last';lo.textContent='月底最後一天';ds.appendChild(lo);
+    cf.style.display = 'flex';
+  }
+}
+
+function setNewNotifyType(t){
+  newNotifyType = t;
+  document.querySelectorAll('.notify-type-row .ntype-btn').forEach((b,i)=>{
+    b.classList.toggle('active', ['none','line','email','both'][i]===t);
+  });
+  const detail = document.getElementById('newNotifyDetail');
+  detail.classList.toggle('show', t!=='none');
+  if(t==='line'){
+    document.getElementById('newLineId').style.display='block';
+    document.getElementById('newEmail').style.display='none';
+  } else if(t==='email'){
+    document.getElementById('newLineId').style.display='none';
+    document.getElementById('newEmail').style.display='block';
+  } else if(t==='both'){
+    document.getElementById('newLineId').style.display='block';
+    document.getElementById('newEmail').style.display='block';
+  }
+}
+
+function setEditNotifyType(id, t){
+  document.querySelectorAll(`#entype-${id} .en-type-btn`).forEach((b,i)=>{
+    b.classList.toggle('active', ['none','line','email','both'][i]===t);
+  });
+  const detail = document.getElementById(`endetail-${id}`);
+  detail.classList.toggle('show', t!=='none');
+  document.getElementById(`entype-val-${id}`).value = t;
+  const lineEl = document.getElementById(`enline-${id}`);
+  const emailEl = document.getElementById(`enemail-${id}`);
+  if(lineEl) lineEl.style.display = (t==='line'||t==='both')?'block':'none';
+  if(emailEl) emailEl.style.display = (t==='email'||t==='both')?'block':'none';
+}
+
+function addTask(){
+  const name = document.getElementById('taskName').value.trim();
+  const dayEl = document.getElementById('taskDay');
+  const day = dayEl ? dayEl.value : '';
+  if(!name||!day){ alert('請填入任務名稱與日期'); return; }
+  const cat = mode==='once' ? 'temp' : (document.getElementById('taskCat')?.value||'other');
+  const pri = document.getElementById('taskPri').value;
+  const notify = {
+    type: newNotifyType,
+    lineUserId: document.getElementById('newLineId').value.trim(),
+    email: document.getElementById('newEmail').value.trim()
+  };
+  tasks.push({id:Date.now(), name, type:mode, day, category:cat, priority:pri, notify, notes:'', completedMonth:''});
+  document.getElementById('taskName').value = '';
+  setNewNotifyType('none');
+  saveLocal(true);
+}
+
+function toggleDone(id){
+  const month = new Date().toISOString().slice(0,7);
+  const t = tasks.find(t=>t.id===id);
+  if(t) t.completedMonth = t.completedMonth===month ? '' : month;
+  saveLocal(true);
+}
+
+function deleteTask(id){
+  if(confirm('確定刪除此任務？')){ tasks=tasks.filter(t=>t.id!==id); saveLocal(true); }
+}
+
+function toggleEdit(id){
+  const el = document.getElementById('edit-'+id);
+  if(el) el.classList.toggle('open');
+}
+
+function saveDetail(id){
+  const t = tasks.find(t=>t.id===id);
+  if(!t) return;
+  const noteEl = document.getElementById('notetext-'+id);
+  const priEl = document.getElementById('prisel-'+id);
+  const ntypeEl = document.getElementById('entype-val-'+id);
+  const lineEl = document.getElementById('enline-'+id);
+  const emailEl = document.getElementById('enemail-'+id);
+  if(noteEl) t.notes = noteEl.value;
+  if(priEl) t.priority = priEl.value;
+  if(ntypeEl) t.notify = {
+    type: ntypeEl.value,
+    lineUserId: lineEl ? lineEl.value.trim() : '',
+    email: emailEl ? emailEl.value.trim() : ''
+  };
+  saveLocal(true);
+}
+
+function saveLocal(markDirty){
+  localStorage.setItem('houseTasksV3', JSON.stringify(tasks));
+  if(markDirty){
+    document.getElementById('syncStatus').textContent = '有未同步的變更';
+    document.getElementById('syncStatus').style.color = '#e67e22';
+  }
+  render();
+}
+
+async function syncToKV(){
+  const btn = document.getElementById('syncBtn');
+  const status = document.getElementById('syncStatus');
+  btn.disabled = true;
+  btn.textContent = '同步中…';
+  try {
+    const res = await fetch(`${WORKER}/sync-tasks`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({tasks})
+    });
+    if(res.ok){
+      status.textContent = '✅ 已同步 ' + new Date().toLocaleTimeString('zh-TW');
+      status.style.color = '#27ae60';
+    } else {
+      throw new Error('HTTP '+res.status);
+    }
+  } catch(e){
+    status.textContent = '❌ 同步失敗：' + e.message;
+    status.style.color = '#e74c3c';
+  }
+  btn.disabled = false;
+  btn.textContent = '☁️ 同步';
+}
+
+function notifyLabel(notify){
+  if(!notify||notify.type==='none') return '';
+  const icons = {line:'LINE',email:'Email',both:'LINE+Email'};
+  return icons[notify.type]||'';
+}
+
+function render(){
+  const month = new Date().toISOString().slice(0,7);
+  const done = tasks.filter(t=>t.completedMonth===month).length;
+  const highPri = tasks.filter(t=>t.priority==='high'&&t.completedMonth!==month).length;
+  document.getElementById('statTotal').textContent = tasks.length;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statHigh').textContent = highPri;
+  const pct = tasks.length ? Math.round(done/tasks.length*100) : 0;
+  document.getElementById('progBar').style.width = pct+'%';
+
+  const sm = document.getElementById('sortMode').value;
+  const sorted = [...tasks].sort((a,b)=>{
+    const ad=a.completedMonth===month, bd=b.completedMonth===month;
+    if(sm==='pri'){ if(ad!==bd)return ad?1:-1; return (priOrder[a.priority||'none'])-(priOrder[b.priority||'none']); }
+    if(sm==='date'){ if(ad!==bd)return ad?1:-1; return (a.day==='last'?32:parseInt(a.day)||0)-(b.day==='last'?32:parseInt(b.day)||0); }
+    if(sm==='cat'){ if(ad!==bd)return ad?1:-1; return a.category.localeCompare(b.category); }
+    return (ad?1:0)-(bd?1:0);
+  });
+
+  const list = document.getElementById('taskList');
+  if(!tasks.length){ list.innerHTML='<div class="empty">尚無任務，點上方新增吧！</div>'; return; }
+
+  list.innerHTML = sorted.map(t=>{
+    const isDone = t.completedMonth===month;
+    const dateLabel = t.type==='once' ? t.day : '每月 '+t.day+' 號';
+    const pri = t.priority||'none';
+    const notify = t.notify||{type:'none'};
+    const nLabel = notifyLabel(notify);
+    const ntype = notify.type||'none';
+    return `<div class="task-card ${isDone?'done':''}" id="card-${t.id}">
+      <div style="display:flex">
+        <div class="pri-bar ${pri}"></div>
+        <div style="flex:1">
+          <div class="card-top" onclick="toggleEdit(${t.id})">
+            <div class="cat-dot ${t.category}"></div>
+            <div class="task-info">
+              <div class="meta-row">
+                <span class="cat-pill ${t.category}">${catMap[t.category]}</span>
+                ${pri!=='none'?`<span class="pri-badge ${pri}">${priMap[pri]}優先</span>`:''}
+                ${nLabel?`<span class="notify-badge">🔔 ${nLabel}</span>`:''}
+              </div>
+              <div class="task-name">${t.name}</div>
+              <div class="task-date">${dateLabel}</div>
+            </div>
+            <div class="card-actions">
+              <button class="act-btn done-btn ${isDone?'undo':''}" onclick="event.stopPropagation();toggleDone(${t.id})">${isDone?'復原':'完成'}</button>
+              <button class="act-btn del-btn" onclick="event.stopPropagation();deleteTask(${t.id})">刪除</button>
+            </div>
+          </div>
+          <div class="edit-area" id="edit-${t.id}">
+            <div class="edit-row">
+              <label>優先度</label>
+              <select id="prisel-${t.id}">
+                <option value="none" ${pri==='none'?'selected':''}>— 不設定</option>
+                <option value="high" ${pri==='high'?'selected':''}>🔴 高</option>
+                <option value="mid" ${pri==='mid'?'selected':''}>🟠 中</option>
+                <option value="low" ${pri==='low'?'selected':''}>🔵 低</option>
+              </select>
+            </div>
+            <div class="edit-notify">
+              <div class="en-label">🔔 到期通知</div>
+              <div class="en-type-row" id="entype-${t.id}">
+                <button class="en-type-btn ${ntype==='none'?'active':''}" onclick="setEditNotifyType(${t.id},'none')">不通知</button>
+                <button class="en-type-btn ${ntype==='line'?'active':''}" onclick="setEditNotifyType(${t.id},'line')">LINE</button>
+                <button class="en-type-btn ${ntype==='email'?'active':''}" onclick="setEditNotifyType(${t.id},'email')">Email</button>
+                <button class="en-type-btn ${ntype==='both'?'active':''}" onclick="setEditNotifyType(${t.id},'both')">兩者</button>
+              </div>
+              <input type="hidden" id="entype-val-${t.id}" value="${ntype}">
+              <div class="en-detail ${ntype!=='none'?'show':''}" id="endetail-${t.id}">
+                <input type="text" id="enline-${t.id}" placeholder="LINE User ID" value="${notify.lineUserId||''}" style="display:${(ntype==='line'||ntype==='both')?'block':'none'}">
+                <input type="email" id="enemail-${t.id}" placeholder="Email 地址" value="${notify.email||''}" style="display:${(ntype==='email'||ntype==='both')?'block':'none'}">
+              </div>
+            </div>
+            <textarea id="notetext-${t.id}" rows="3" placeholder="備註…">${t.notes||''}</textarea>
+            <button class="save-btn" onclick="saveDetail(${t.id})">儲存</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+render();
+</script>
+
+
+</body></html>
