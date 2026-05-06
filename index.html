@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
 <title>任務管理中心</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap');
@@ -13,37 +11,53 @@
   --ink:#1a1a1a;--ink2:#555;--ink3:#888;--surface:#fff;--surface2:#f7f6f3;--surface3:#eeecea;
   --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
   --finance:#c0392b;--life:#27ae60;--digital:#8e44ad;--other:#7f8c8d;--temp:#d68910;
-  --accent:#2c3e50;
+  --accent:#2c3e50;--line:#06c755;
   --p-high:#e74c3c;--p-mid:#e67e22;--p-low:#3498db;
 }
 body{font-family:'Noto Sans TC',sans-serif;background:var(--surface2);color:var(--ink);min-height:100vh;padding:16px 12px 40px}
 h2{font-size:20px;font-weight:700;text-align:center;letter-spacing:2px;color:var(--accent);margin-bottom:16px;padding-top:4px}
 .app{max-width:420px;margin:0 auto}
 .panel{background:var(--surface);border:0.5px solid var(--border2);border-radius:16px;padding:18px;margin-bottom:14px}
-.panel-title{font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase}
+.panel-title{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase}
 .tabs{display:flex;margin-bottom:14px;border:0.5px solid var(--border2);border-radius:10px;overflow:hidden}
 .tab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:500;cursor:pointer;background:var(--surface2);color:var(--ink2);border:none;font-family:'Noto Sans TC',sans-serif}
 .tab.active{background:var(--accent);color:#fff}
 .field{display:flex;flex-direction:column;gap:4px;margin-bottom:11px}
 .field label{font-size:11px;color:var(--ink3);font-weight:700;letter-spacing:.8px;text-transform:uppercase}
-.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:0.5px solid var(--border2);border-radius:8px;font-size:15px;font-family:'Noto Sans TC',sans-serif;background:var(--surface);color:var(--ink);outline:none}
+.field input,.field select{width:100%;padding:10px 12px;border:0.5px solid var(--border2);border-radius:8px;font-size:15px;font-family:'Noto Sans TC',sans-serif;background:var(--surface);color:var(--ink);outline:none}
 .field input:focus,.field select:focus{border-color:var(--accent)}
-.notify-block{border:0.5px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:11px;background:var(--surface2)}
-.notify-block .nb-label{font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--ink3);margin-bottom:8px;text-transform:uppercase}
-.notify-type-row{display:flex;gap:6px;margin-bottom:10px}
-.ntype-btn{flex:1;padding:7px 4px;border:0.5px solid var(--border2);border-radius:8px;font-size:12px;font-weight:700;font-family:'Noto Sans TC',sans-serif;background:var(--surface);color:var(--ink2);cursor:pointer;text-align:center}
-.ntype-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.notify-detail{display:none;flex-direction:column;gap:8px}
-.notify-detail.show{display:flex}
-.notify-detail input{padding:9px 11px;border:0.5px solid var(--border2);border-radius:8px;font-size:14px;font-family:'DM Mono',monospace;background:var(--surface);color:var(--ink);outline:none;width:100%}
-.notify-detail .hint{font-size:11px;color:var(--ink3);line-height:1.5}
+
+/* 通知開關 */
+.notify-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface2);border:0.5px solid var(--border2);border-radius:8px;margin-bottom:11px}
+.notify-toggle-label{font-size:14px;color:var(--ink2);font-weight:500}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:#ccc;border-radius:24px;cursor:pointer;transition:.3s}
+.toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
+.toggle input:checked + .toggle-slider{background:var(--accent)}
+.toggle input:checked + .toggle-slider:before{transform:translateX(20px)}
+
+/* 全域通知設定面板 */
+.notify-panel{background:var(--surface);border:0.5px solid var(--border2);border-radius:16px;padding:18px;margin-bottom:14px}
+.notify-section{margin-bottom:14px}
+.notify-section:last-child{margin-bottom:0}
+.ns-header{font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .line-id-row{display:flex;gap:6px;align-items:center}
-.line-id-row input{flex:1}
-.line-qr-btn{white-space:nowrap;padding:9px 11px;border:0.5px solid var(--border2);border-radius:8px;font-size:12px;font-weight:700;font-family:'Noto Sans TC',sans-serif;background:var(--surface3);color:var(--ink2);cursor:pointer;flex-shrink:0}
-.line-guide{background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:12px;margin-top:8px;display:flex;flex-direction:column;gap:8px}
+.line-id-row input{flex:1;padding:9px 11px;border:0.5px solid var(--border2);border-radius:8px;font-size:13px;font-family:'DM Mono',monospace;background:var(--surface);color:var(--ink);outline:none}
+.how-btn{white-space:nowrap;padding:8px 10px;border:0.5px solid var(--border2);border-radius:8px;font-size:12px;font-weight:700;font-family:'Noto Sans TC',sans-serif;background:var(--surface3);color:var(--ink2);cursor:pointer;flex-shrink:0}
+.line-guide{background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:12px;margin-top:8px;display:none;flex-direction:column;gap:8px}
+.line-guide.show{display:flex}
 .guide-step{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2)}
-.step-num{width:20px;height:20px;border-radius:50%;background:#06c755;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.line-add-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#06c755;color:#fff;border-radius:10px;padding:11px;font-size:14px;font-weight:700;text-decoration:none;font-family:'Noto Sans TC',sans-serif}
+.step-num{width:20px;height:20px;border-radius:50%;background:var(--line);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.line-add-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--line);color:#fff;border-radius:10px;padding:10px;font-size:14px;font-weight:700;text-decoration:none;font-family:'Noto Sans TC',sans-serif}
+.email-input{width:100%;padding:9px 11px;border:0.5px solid var(--border2);border-radius:8px;font-size:13px;font-family:'DM Mono',monospace;background:var(--surface);color:var(--ink);outline:none}
+.test-row{display:flex;gap:8px;margin-top:8px}
+.test-btn{flex:1;padding:8px;border:none;border-radius:8px;font-size:13px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer}
+.test-line-btn{background:#e8fdf0;color:var(--line)}
+.test-email-btn{background:#e8f0fd;color:#1a56db}
+.save-notify-btn{width:100%;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;margin-top:12px}
+.test-result{font-size:12px;margin-top:6px;min-height:18px}
+
 .add-btn{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;letter-spacing:1px}
 .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .section-label{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase}
@@ -68,7 +82,7 @@ h2{font-size:20px;font-weight:700;text-align:center;letter-spacing:2px;color:var
 .cat-pill.finance{background:var(--finance)}.cat-pill.life{background:var(--life)}.cat-pill.digital{background:var(--digital)}.cat-pill.other{background:var(--other)}.cat-pill.temp{background:var(--temp)}
 .pri-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
 .pri-badge.high{background:#fdecea;color:var(--p-high)}.pri-badge.mid{background:#fef3e2;color:var(--p-mid)}.pri-badge.low{background:#e8f4fc;color:var(--p-low)}
-.notify-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:#e8f4fc;color:#1a6fa8;font-weight:700}
+.notify-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:#e8fdf0;color:#16a34a;font-weight:700}
 .task-name{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:2px}
 .task-date{font-size:12px;color:var(--ink3);font-family:'DM Mono',monospace}
 .card-actions{display:flex;gap:6px;flex-shrink:0;align-items:flex-start}
@@ -79,23 +93,15 @@ h2{font-size:20px;font-weight:700;text-align:center;letter-spacing:2px;color:var
 .edit-area.open{display:flex}
 .edit-row{display:flex;gap:8px;align-items:center}
 .edit-row label{font-size:11px;color:var(--ink3);font-weight:700;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase}
-.edit-row select,.edit-row input{flex:1;padding:7px 9px;border:0.5px solid var(--border2);border-radius:7px;font-family:'Noto Sans TC',sans-serif;font-size:13px;background:var(--surface);color:var(--ink);outline:none}
-.edit-row input{font-family:'DM Mono',monospace}
+.edit-row select{flex:1;padding:7px 9px;border:0.5px solid var(--border2);border-radius:7px;font-family:'Noto Sans TC',sans-serif;font-size:13px;background:var(--surface);color:var(--ink);outline:none}
 .edit-area textarea{width:100%;border:0.5px solid var(--border2);border-radius:8px;padding:9px;font-size:14px;font-family:'Noto Sans TC',sans-serif;background:var(--surface);color:var(--ink);resize:none;outline:none}
-.edit-notify{border:0.5px solid var(--border2);border-radius:9px;padding:10px;background:var(--surface)}
-.edit-notify .en-label{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
-.en-type-row{display:flex;gap:5px;margin-bottom:8px}
-.en-type-btn{flex:1;padding:6px 3px;border:0.5px solid var(--border2);border-radius:7px;font-size:11px;font-weight:700;font-family:'Noto Sans TC',sans-serif;background:var(--surface2);color:var(--ink2);cursor:pointer;text-align:center}
-.en-type-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.en-detail{display:none;flex-direction:column;gap:6px}
-.en-detail.show{display:flex}
-.en-detail input{padding:8px 10px;border:0.5px solid var(--border2);border-radius:7px;font-size:13px;font-family:'DM Mono',monospace;background:var(--surface2);color:var(--ink);outline:none;width:100%}
-.save-btn{width:100%;padding:9px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;font-size:14px}
+.card-save-btn{width:100%;padding:9px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;font-size:14px}
 .sync-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:14px}
 .sync-status{font-size:12px;color:var(--ink3)}
 .sync-btn{padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer}
 .sync-btn:disabled{background:#ccc;cursor:not-allowed}
 .empty{text-align:center;color:var(--ink3);font-size:14px;padding:30px 0}
+.notify-warn{font-size:12px;color:#e67e22;margin-top:4px}
 </style>
 </head>
 <body>
@@ -114,12 +120,52 @@ h2{font-size:20px;font-weight:700;text-align:center;letter-spacing:2px;color:var
     <button class="sync-btn" id="syncBtn" onclick="syncToKV()">☁️ 同步</button>
   </div>
 
+  <!-- 全域通知設定 -->
+  <div class="notify-panel">
+    <div class="panel-title">🔔 通知設定（全域）</div>
+
+    <div class="notify-section">
+      <div class="ns-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#06c755"><path d="M12 2C6.48 2 2 6.03 2 11c0 3.19 1.74 6.01 4.42 7.72L5.5 22l4.05-2.12C10.32 20.28 11.15 20.4 12 20.4c5.52 0 10-4.03 10-9.4C22 6.03 17.52 2 12 2z"/></svg>
+        LINE 通知
+      </div>
+      <div class="line-id-row">
+        <input type="text" id="globalLineId" placeholder="LINE User ID（Uxxxxxxxxxx）" oninput="markNotifyDirty()">
+        <button class="how-btn" onclick="toggleLineGuide()">如何取得？</button>
+      </div>
+      <div class="line-guide" id="lineGuide">
+        <div class="guide-step"><span class="step-num">1</span><span>加入 LINE Bot 好友</span></div>
+        <a class="line-add-btn" href="https://line.me/R/ti/p/@517nsygr" target="_blank">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.03 2 11c0 3.19 1.74 6.01 4.42 7.72L5.5 22l4.05-2.12C10.32 20.28 11.15 20.4 12 20.4c5.52 0 10-4.03 10-9.4C22 6.03 17.52 2 12 2z"/></svg>
+          點此加入 @517nsygr
+        </a>
+        <div class="guide-step"><span class="step-num">2</span><span>Bot 自動回覆你的 User ID</span></div>
+        <div class="guide-step"><span class="step-num">3</span><span>複製 ID 貼回上方欄位</span></div>
+      </div>
+      <div class="test-row">
+        <button class="test-btn test-line-btn" onclick="testLine()">📱 測試 LINE</button>
+      </div>
+      <div class="test-result" id="lineTestResult"></div>
+    </div>
+
+    <div class="notify-section">
+      <div class="ns-header">✉️ Email 通知</div>
+      <input type="email" class="email-input" id="globalEmail" placeholder="填入接收通知的 Email" oninput="markNotifyDirty()">
+      <div class="test-row">
+        <button class="test-btn test-email-btn" onclick="testEmail()">📧 測試 Email</button>
+      </div>
+      <div class="test-result" id="emailTestResult"></div>
+    </div>
+
+    <button class="save-notify-btn" id="saveNotifyBtn" onclick="saveNotifySettings()">💾 儲存通知設定</button>
+  </div>
+
+  <!-- 新增任務 -->
   <div class="panel">
     <div class="tabs">
       <button class="tab active" id="tabMonthly" onclick="setType('monthly')">📅 每月固定</button>
       <button class="tab" id="tabOnce" onclick="setType('once')">⚡ 臨時任務</button>
     </div>
-
     <div class="field"><label>任務名稱</label><input type="text" id="taskName" placeholder="輸入任務名稱…"></div>
     <div class="field" id="catField"><label>類別</label>
       <select id="taskCat">
@@ -139,43 +185,15 @@ h2{font-size:20px;font-weight:700;text-align:center;letter-spacing:2px;color:var
     </div>
     <div class="field" id="dayField"><label>每月幾號</label><select id="taskDay"></select></div>
 
-    <div class="notify-block">
-      <div class="nb-label">🔔 到期通知</div>
-      <div class="notify-type-row">
-        <button class="ntype-btn active" onclick="setNewNotifyType('none')">不通知</button>
-        <button class="ntype-btn" onclick="setNewNotifyType('line')">LINE</button>
-        <button class="ntype-btn" onclick="setNewNotifyType('email')">Email</button>
-        <button class="ntype-btn" onclick="setNewNotifyType('both')">兩者</button>
-      </div>
-      <div class="notify-detail" id="newNotifyDetail">
-        <!-- LINE ID 區塊 -->
-        <div id="newLineBlock">
-          <div class="line-id-row">
-            <input type="text" id="newLineId" placeholder="LINE User ID（貼上後自動儲存）">
-            <button class="line-qr-btn" onclick="showLineGuide()">如何取得？</button>
-          </div>
-          <div class="line-guide" id="lineGuide" style="display:none">
-            <div class="guide-step">
-              <span class="step-num">1</span>
-              <span>加入我們的 LINE Bot 好友</span>
-            </div>
-            <a class="line-add-btn" href="https://line.me/R/ti/p/@YOUR_BOT_ID" target="_blank">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.03 2 11c0 3.19 1.74 6.01 4.42 7.72L5.5 22l4.05-2.12C10.32 20.28 11.15 20.4 12 20.4c5.52 0 10-4.03 10-9.4C22 6.03 17.52 2 12 2z"/></svg>
-              點此加入 LINE Bot
-            </a>
-            <div class="guide-step">
-              <span class="step-num">2</span>
-              <span>Bot 會自動傳送你的 User ID</span>
-            </div>
-            <div class="guide-step">
-              <span class="step-num">3</span>
-              <span>複製 ID 貼回上方欄位即完成</span>
-            </div>
-          </div>
-        </div>
-        <input type="email" id="newEmail" placeholder="Email 地址">
-      </div>
+    <!-- 到期通知開關 -->
+    <div class="notify-toggle-row">
+      <span class="notify-toggle-label">🔔 到期通知</span>
+      <label class="toggle">
+        <input type="checkbox" id="taskNotify">
+        <span class="toggle-slider"></span>
+      </label>
     </div>
+    <div id="notifyWarn" class="notify-warn" style="display:none">⚠️ 請先在上方設定 LINE 或 Email</div>
 
     <button class="add-btn" onclick="addTask()">＋ 新增任務</button>
   </div>
@@ -194,14 +212,17 @@ h2{font-size:20px;font-weight:700;text-align:center;letter-spacing:2px;color:var
 
 <script>
 const WORKER = 'https://arcar.kftseng2oo1.workers.dev';
-const LINE_BOT_ID = '@517nsygr';
 const catMap = {finance:'財務',life:'生活',digital:'數位',other:'其他',temp:'臨時'};
 const priMap = {high:'高',mid:'中',low:'低',none:''};
 const priOrder = {high:0,mid:1,low:2,none:3};
 
-let tasks = JSON.parse(localStorage.getItem('houseTasksV3') || '[]');
+let tasks = JSON.parse(localStorage.getItem('houseTasksV4') || '[]');
+let notifySettings = JSON.parse(localStorage.getItem('houseNotifySettings') || '{"lineUserId":"","email":""}');
 let mode = 'monthly';
-let newNotifyType = 'none';
+
+// 載入通知設定
+document.getElementById('globalLineId').value = notifySettings.lineUserId || '';
+document.getElementById('globalEmail').value = notifySettings.email || '';
 
 // 初始化日期選單
 (function(){
@@ -209,6 +230,64 @@ let newNotifyType = 'none';
   for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i+' 號';ds.appendChild(o);}
   const lo=document.createElement('option');lo.value='last';lo.textContent='月底最後一天';ds.appendChild(lo);
 })();
+
+// 通知開關：顯示警告
+document.getElementById('taskNotify').addEventListener('change', function(){
+  const hasSettings = notifySettings.lineUserId || notifySettings.email;
+  document.getElementById('notifyWarn').style.display = (this.checked && !hasSettings) ? 'block' : 'none';
+});
+
+function markNotifyDirty(){
+  document.getElementById('saveNotifyBtn').textContent = '💾 儲存通知設定（有變更）';
+  document.getElementById('saveNotifyBtn').style.background = '#e67e22';
+}
+
+function saveNotifySettings(){
+  notifySettings.lineUserId = document.getElementById('globalLineId').value.trim();
+  notifySettings.email = document.getElementById('globalEmail').value.trim();
+  localStorage.setItem('houseNotifySettings', JSON.stringify(notifySettings));
+  document.getElementById('saveNotifyBtn').textContent = '✅ 已儲存';
+  document.getElementById('saveNotifyBtn').style.background = '#27ae60';
+  setTimeout(()=>{
+    document.getElementById('saveNotifyBtn').textContent = '💾 儲存通知設定';
+    document.getElementById('saveNotifyBtn').style.background = 'var(--accent)';
+  }, 2000);
+}
+
+function toggleLineGuide(){
+  const g = document.getElementById('lineGuide');
+  g.classList.toggle('show');
+}
+
+async function testLine(){
+  const userId = document.getElementById('globalLineId').value.trim();
+  const result = document.getElementById('lineTestResult');
+  if(!userId){ result.style.color='#e74c3c'; result.textContent='❌ 請先填入 LINE User ID'; return; }
+  result.style.color='#888'; result.textContent='傳送中…';
+  try {
+    const res = await fetch(`${WORKER}/send-line`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({userId, message:'✅ LINE 通知測試成功！\n任務管理中心已可發送通知給您 🗓'})
+    });
+    if(res.ok){ result.style.color='#27ae60'; result.textContent='✅ 傳送成功！請確認 LINE 是否收到'; }
+    else throw new Error('HTTP '+res.status);
+  } catch(e){ result.style.color='#e74c3c'; result.textContent='❌ 失敗：'+e.message; }
+}
+
+async function testEmail(){
+  const email = document.getElementById('globalEmail').value.trim();
+  const result = document.getElementById('emailTestResult');
+  if(!email){ result.style.color='#e74c3c'; result.textContent='❌ 請先填入 Email'; return; }
+  result.style.color='#888'; result.textContent='傳送中…';
+  try {
+    const res = await fetch(`${WORKER}/send-email`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({to: email, subject:'✅ Email 通知測試', message:'Email 通知測試成功！\n任務管理中心已可發送通知給您 🗓'})
+    });
+    if(res.ok){ result.style.color='#27ae60'; result.textContent='✅ 傳送成功！請確認信箱是否收到'; }
+    else throw new Error('HTTP '+res.status);
+  } catch(e){ result.style.color='#e74c3c'; result.textContent='❌ 失敗：'+e.message; }
+}
 
 function setType(t){
   mode = t;
@@ -228,45 +307,6 @@ function setType(t){
   }
 }
 
-function showLineGuide(){
-  const g = document.getElementById('lineGuide');
-  const btn = document.querySelector('.line-add-btn');
-  if(btn) btn.href = 'https://line.me/R/ti/p/' + encodeURIComponent(LINE_BOT_ID);
-  g.style.display = g.style.display === 'none' ? 'flex' : 'none';
-}
-
-function setNewNotifyType(t){
-  newNotifyType = t;
-  document.querySelectorAll('.notify-type-row .ntype-btn').forEach((b,i)=>{
-    b.classList.toggle('active', ['none','line','email','both'][i]===t);
-  });
-  const detail = document.getElementById('newNotifyDetail');
-  detail.classList.toggle('show', t!=='none');
-  if(t==='line'){
-    document.getElementById('newLineId').style.display='block';
-    document.getElementById('newEmail').style.display='none';
-  } else if(t==='email'){
-    document.getElementById('newLineId').style.display='none';
-    document.getElementById('newEmail').style.display='block';
-  } else if(t==='both'){
-    document.getElementById('newLineId').style.display='block';
-    document.getElementById('newEmail').style.display='block';
-  }
-}
-
-function setEditNotifyType(id, t){
-  document.querySelectorAll(`#entype-${id} .en-type-btn`).forEach((b,i)=>{
-    b.classList.toggle('active', ['none','line','email','both'][i]===t);
-  });
-  const detail = document.getElementById(`endetail-${id}`);
-  detail.classList.toggle('show', t!=='none');
-  document.getElementById(`entype-val-${id}`).value = t;
-  const lineEl = document.getElementById(`enline-${id}`);
-  const emailEl = document.getElementById(`enemail-${id}`);
-  if(lineEl) lineEl.style.display = (t==='line'||t==='both')?'block':'none';
-  if(emailEl) emailEl.style.display = (t==='email'||t==='both')?'block':'none';
-}
-
 function addTask(){
   const name = document.getElementById('taskName').value.trim();
   const dayEl = document.getElementById('taskDay');
@@ -274,14 +314,11 @@ function addTask(){
   if(!name||!day){ alert('請填入任務名稱與日期'); return; }
   const cat = mode==='once' ? 'temp' : (document.getElementById('taskCat')?.value||'other');
   const pri = document.getElementById('taskPri').value;
-  const notify = {
-    type: newNotifyType,
-    lineUserId: document.getElementById('newLineId').value.trim(),
-    email: document.getElementById('newEmail').value.trim()
-  };
+  const notify = document.getElementById('taskNotify').checked;
   tasks.push({id:Date.now(), name, type:mode, day, category:cat, priority:pri, notify, notes:'', completedMonth:''});
   document.getElementById('taskName').value = '';
-  setNewNotifyType('none');
+  document.getElementById('taskNotify').checked = false;
+  document.getElementById('notifyWarn').style.display = 'none';
   saveLocal(true);
 }
 
@@ -306,21 +343,15 @@ function saveDetail(id){
   if(!t) return;
   const noteEl = document.getElementById('notetext-'+id);
   const priEl = document.getElementById('prisel-'+id);
-  const ntypeEl = document.getElementById('entype-val-'+id);
-  const lineEl = document.getElementById('enline-'+id);
-  const emailEl = document.getElementById('enemail-'+id);
+  const notifyEl = document.getElementById('notifycheck-'+id);
   if(noteEl) t.notes = noteEl.value;
   if(priEl) t.priority = priEl.value;
-  if(ntypeEl) t.notify = {
-    type: ntypeEl.value,
-    lineUserId: lineEl ? lineEl.value.trim() : '',
-    email: emailEl ? emailEl.value.trim() : ''
-  };
+  if(notifyEl) t.notify = notifyEl.checked;
   saveLocal(true);
 }
 
 function saveLocal(markDirty){
-  localStorage.setItem('houseTasksV3', JSON.stringify(tasks));
+  localStorage.setItem('houseTasksV4', JSON.stringify(tasks));
   if(markDirty){
     document.getElementById('syncStatus').textContent = '有未同步的變更';
     document.getElementById('syncStatus').style.color = '#e67e22';
@@ -331,32 +362,26 @@ function saveLocal(markDirty){
 async function syncToKV(){
   const btn = document.getElementById('syncBtn');
   const status = document.getElementById('syncStatus');
-  btn.disabled = true;
-  btn.textContent = '同步中…';
+  btn.disabled = true; btn.textContent = '同步中…';
+  // 同步時把通知設定一併帶入每個任務（供 Cron 使用）
+  const payload = tasks.map(t => Object.assign({}, t, {
+    _lineUserId: notifySettings.lineUserId,
+    _email: notifySettings.email
+  }));
   try {
     const res = await fetch(`${WORKER}/sync-tasks`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({tasks})
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({tasks: payload})
     });
     if(res.ok){
       status.textContent = '✅ 已同步 ' + new Date().toLocaleTimeString('zh-TW');
       status.style.color = '#27ae60';
-    } else {
-      throw new Error('HTTP '+res.status);
-    }
+    } else throw new Error('HTTP '+res.status);
   } catch(e){
     status.textContent = '❌ 同步失敗：' + e.message;
     status.style.color = '#e74c3c';
   }
-  btn.disabled = false;
-  btn.textContent = '☁️ 同步';
-}
-
-function notifyLabel(notify){
-  if(!notify||notify.type==='none') return '';
-  const icons = {line:'LINE',email:'Email',both:'LINE+Email'};
-  return icons[notify.type]||'';
+  btn.disabled = false; btn.textContent = '☁️ 同步';
 }
 
 function render(){
@@ -385,9 +410,7 @@ function render(){
     const isDone = t.completedMonth===month;
     const dateLabel = t.type==='once' ? t.day : '每月 '+t.day+' 號';
     const pri = t.priority||'none';
-    const notify = t.notify||{type:'none'};
-    const nLabel = notifyLabel(notify);
-    const ntype = notify.type||'none';
+    const hasNotify = t.notify;
     return `<div class="task-card ${isDone?'done':''}" id="card-${t.id}">
       <div style="display:flex">
         <div class="pri-bar ${pri}"></div>
@@ -398,7 +421,7 @@ function render(){
               <div class="meta-row">
                 <span class="cat-pill ${t.category}">${catMap[t.category]}</span>
                 ${pri!=='none'?`<span class="pri-badge ${pri}">${priMap[pri]}優先</span>`:''}
-                ${nLabel?`<span class="notify-badge">🔔 ${nLabel}</span>`:''}
+                ${hasNotify?`<span class="notify-badge">🔔 通知</span>`:''}
               </div>
               <div class="task-name">${t.name}</div>
               <div class="task-date">${dateLabel}</div>
@@ -418,22 +441,15 @@ function render(){
                 <option value="low" ${pri==='low'?'selected':''}>🔵 低</option>
               </select>
             </div>
-            <div class="edit-notify">
-              <div class="en-label">🔔 到期通知</div>
-              <div class="en-type-row" id="entype-${t.id}">
-                <button class="en-type-btn ${ntype==='none'?'active':''}" onclick="setEditNotifyType(${t.id},'none')">不通知</button>
-                <button class="en-type-btn ${ntype==='line'?'active':''}" onclick="setEditNotifyType(${t.id},'line')">LINE</button>
-                <button class="en-type-btn ${ntype==='email'?'active':''}" onclick="setEditNotifyType(${t.id},'email')">Email</button>
-                <button class="en-type-btn ${ntype==='both'?'active':''}" onclick="setEditNotifyType(${t.id},'both')">兩者</button>
-              </div>
-              <input type="hidden" id="entype-val-${t.id}" value="${ntype}">
-              <div class="en-detail ${ntype!=='none'?'show':''}" id="endetail-${t.id}">
-                <input type="text" id="enline-${t.id}" placeholder="LINE User ID" value="${notify.lineUserId||''}" style="display:${(ntype==='line'||ntype==='both')?'block':'none'}">
-                <input type="email" id="enemail-${t.id}" placeholder="Email 地址" value="${notify.email||''}" style="display:${(ntype==='email'||ntype==='both')?'block':'none'}">
-              </div>
+            <div class="notify-toggle-row" style="margin-bottom:0">
+              <span class="notify-toggle-label">🔔 到期通知</span>
+              <label class="toggle">
+                <input type="checkbox" id="notifycheck-${t.id}" ${hasNotify?'checked':''}>
+                <span class="toggle-slider"></span>
+              </label>
             </div>
             <textarea id="notetext-${t.id}" rows="3" placeholder="備註…">${t.notes||''}</textarea>
-            <button class="save-btn" onclick="saveDetail(${t.id})">儲存</button>
+            <button class="card-save-btn" onclick="saveDetail(${t.id})">儲存</button>
           </div>
         </div>
       </div>
