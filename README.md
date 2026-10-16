@@ -1,44 +1,22 @@
-# 日常家事通知
+# 🗓 任務管理中心（日常家事通知）
 
-> 日常家事通知
+管理每月固定與臨時的家事，到期時用 LINE 或 Email 提醒，資料可同步到雲端。
 
-## 📦 包含檔案
+**線上使用**：https://kftseng2oo1.github.io/house/
 
-- `icon-192.png`
-- `icon-512.png`
-- `manifest.json`
-- `sw.js`
-- `index.html`
-- `icon.svg`
-- `icon-maskable.svg`
-- `offline.html`
+## 主要功能
+- 兩種任務：**📅 每月固定**（每月幾號，可選月底最後一天）、**⚡ 臨時任務**（指定日期）
+- 分類：財務、生活、數位、其他；優先度：高、中、低
+- 勾選完成、展開編輯、刪除
+- 通知設定：LINE User ID 或 Email，可先發測試訊息
+- ☁️ 同步：把任務存到 Cloudflare KV，由 Worker 依日期發送提醒
 
-## 🚀 部署到 GitHub Pages
+## 設定 LINE 通知
+1. 加入官方帳號 `@517nsygr`
+2. 依 App 內「如何取得？」說明取得 LINE User ID
+3. 填入後按「📱 測試 LINE」
 
-```bash
-git init
-git add .
-git commit -m "init: 日常家事通知 PWA"
-git branch -M main
-git remote add origin https://github.com/<username>/<repo>.git
-git push -u origin main
-```
-
-然後在 GitHub repo → **Settings → Pages** → Source 選 `main` 分支，等待幾分鐘後即可訪問。
-
-## 📱 安裝 PWA
-
-在支援的瀏覽器（Chrome / Edge / Safari iOS）中打開網頁，  
-點擊「**安裝**」或「**加入主畫面**」即可將此 App 安裝到裝置。
-
-## ⚙ 技術規格
-
-| 項目 | 值 |
-|------|-----|
-| display | standalone |
-| theme_color | #1a73e8 |
-| lang | zh-TW |
-| scope | /house/ |
-
----
-*由 [PWA 打包神器](https://github.com) 自動生成*
+## 技術與依賴
+- 單檔 HTML PWA（`index.html` 內含全部 HTML/CSS/JS），`manifest.json` + `sw.js` 提供安裝到主畫面與離線快取。
+- 後端：`arcar.kftseng2oo1.workers.dev` 的 `/sync-tasks`、`/send-line`、`/send-email`
+- 本機資料：`houseTasksV4`、`houseNotifySettings`
